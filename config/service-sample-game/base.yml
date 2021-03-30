@@ -1,0 +1,84 @@
+# yaml
+
+- location: /sample-game/
+  description: プロダクト「sample-game」のルートパス
+  hide_document: true
+  const_params:
+    - name: app_name
+      value: sample-game
+    - name: cache_id
+      value: Cache
+    - name: redis_id
+      value: Redis
+    - name: mongo_id
+      value: MongoSampleGame
+    - name: mysql_id
+      value: MySQLSampleGame
+    - name: sqlite_id
+      value: SqliteSampleGame
+    - name: csv_mux
+      value: sample-game
+    - name: doc_path
+      value: /sample-game/v1/
+  services:
+    - method: GET
+      description: 疎通テストAPI
+      middlewares:
+        - HybsLog
+        - ResponseJSON
+      service_id: SystemTest
+
+- location: /sample-game/docs/
+  description: document
+  hide_document: true
+  services:
+    - method: GET
+      description: ゲームサーバーAPIドキュメント
+      service_id: Document # builtin service
+
+- location: /sample-game/v1/
+  description: サンプルゲーム仮想サーバーV1：ルートパス
+  middlewares:
+    - HybsLog             # hybs system log
+    - Authentication      # parse header and basic authentication
+    - ResponseJSON        # response json content-type
+    - UseCache            # use cache mux named Cache
+    - UseRedis            # use redis conn named Redis
+    - UseMongoSampleGame  # use mongodb named MongoSampleGame
+    - UseMySQLSampleGame  # use mysql named MySQLSampleGame
+    - UseSqliteSampleGame # use sqlite named SqliteSampleGame
+    - AuthOnetimeToken    # authorization by onetime token
+    - CheckPlayerStatus   # check player account status
+  slow_query_warn: 80ms   # log information if processing time is more than 80ms
+  query_args:
+    - name: onetime_token
+      description: ゲームサーバにアクセスする為に全てのAPIはonetime_tokenが必要
+      allow:
+        - ^[a-zA-Z0-9]{32}$
+  services:
+    - method: GET
+      description: ゲームサーバ状態を確認する
+      service_id: SystemTest
+      response:
+        - status_code: 200
+          fields:
+            - name: serverId
+              description: 当リクエストの処理を担当したサーバのID。共通フィールド
+              example: dev01
+            - name: serverTime
+              description: サーバ側アプリケーション層タイムスタンプ。システム層時間情報はヘッダーのDateとのフィールドに参考して下さい。共通フィールド
+              example: 1600000000
+            - name: onetimeToken
+              description: 次に使う新しいトークン情報（トークンと有効期限）。共通フィールド
+            - name: debugMode
+              description: サーバ側はDebugモードかどうか。基本的に開発環境の場合はtrueを返す。本番環境の場合は当フィールドが出ない。
+              example: true
+            - name: debugLog
+              description: リクエストを処理している間に出力した詳細ログ。debugModeがtrueの場合のみ返す。
+
+- location: /sample-game/debug/
+  middlewares:
+    - ResponseJSON
+  services:
+    - method: GET
+      service_id: __debug__

@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:6.2
+    restart: always
+    ports:
+      - 6389:6379
+    volumes:
+      - ./redis:/data
+
+  mongo:
+    image: mongo:4.4
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: hayabusa-cloud
+    networks:
+      - mongo-compose-network
+    command: --auth
+    ports:
+      - 27117:27017
+    volumes:
+      - ./mongo/db:/data/db
+      - ./mongo/configdb:/data/configdb
+
+  mongo-express:
+    image: mongo-express:0.54
+    restart: always
+    ports:
+      - 8181:8081
+    links:
+      - mongo
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: root
+      ME_CONFIG_BASICAUTH_PASSWORD: hayabusa-cloud
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: hayabusa-cloud
+    networks:
+      - mongo-compose-network
+
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: hayabusa-cloud
+      MYSQL_DATABASE: hybs_sample_game
+      MYSQL_USER: user
+      MYSQL_PASSWORD: hayabusa-cloud
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql:ro
+    ports:
+      - 3316:3306
+
+networks:
+  mongo-compose-network:
+    driver: bridge

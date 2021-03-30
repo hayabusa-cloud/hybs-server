@@ -1,0 +1,34 @@
+# yaml
+
+# use middleware
+- event: request
+  code: 0000 # code is uint16, 0bit~15bit
+  bits: 1    # match first 1 bit(s), similar as CIDR
+  # for example:
+  #   hit: 0000 0010 0100 0fff
+  #   out: 1000 7000 ffff
+  description: コードセグメント(0000~7fff)
+  middlewares:
+    - RTAuthorization
+  csv_mux: sample-game
+
+# service
+- event: request
+  code: 01ff
+  description: （テスト）汎用ルームブロードキャスト
+  handler: RoomBroadcast
+
+# use middleware
+- event: request
+  code: 1000
+  bit: 12 # match first 14 bit(s), similar as CIDR
+  # it means the range of 1000~100f
+  description: QPS統計
+  middlewares:
+    - RTSampleGameQPS
+
+# service
+- event: request
+  code: 1000
+  description: （テスト）A足すBを計算
+  handler: RTSampleGameTestV1

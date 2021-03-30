@@ -1,0 +1,26 @@
+# yaml
+
+- location: /v1
+  description: プラットフォームサーバールート
+  hide_document: true
+  const_params:
+    - name: mongo_id
+      value: MongoPlatform
+    - name: doc_path
+      value: /v1/
+  middlewares:
+    - HybsLog            # hybs system log
+    - Authentication     # parse header and basic authentication
+    - ResponseJSON       # response json content-type
+    - UseRedis           # use redis named Redis
+    - UseMongoPlatform   # use database named MongoPlatform
+
+- location: /docs/
+  description: document
+  hide_document: true
+  const_params:
+    - name: doc_path
+      value: /v1/
+  services:
+    - method: GET
+      service_id: Document

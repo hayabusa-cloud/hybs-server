@@ -1,0 +1,41 @@
+# yaml
+
+- location: /sample-game/v1/player/
+  description: プレイヤー基本情報
+  services:
+    - method: GET
+      description: プレイヤー基本情報を取得
+      service_id: SampleGameGetPlayerV1
+      response:
+        - status_code: 200
+          fields:
+            - name: player.hayabusaId
+              description: アカウントID
+              example: abcdefg01234
+            - name: player.goldNum
+              description: 持ちゴールド数
+              example: 9999
+            - name: player.stamina
+              description: スタミナ（必要なタイミングのみ更新）
+              example: 20
+            - name: player.staminaAt
+              description: このスタミナになった時点（必要なタイミングのみ更新）
+              example: 1600000000
+    - method: PATCH
+      description: プレイヤー基本情報を編集
+      service_id: SampleGameModifyPlayerV1
+      form_args:
+        - name: gain_gold_num
+          description: 増加する持ちゴールド数
+          example: 1
+      response:
+        - status_code: 200
+          fields:
+            - name: player
+              description: アップデートされた後のプレイヤーデータ
+            - name: sampleIntField
+              description: サンプルフィールド
+            - name: sampleStringField
+              description: サンプルフィールド
+            - name: sampleObjectField
+              description: サンプルフィールド

@@ -1,0 +1,46 @@
+# yaml
+
+- location: /v1
+  description: セントラルサーバールート
+  const_params:
+    - name: mongo_id
+      value: MongoCentral
+  middlewares:
+    - HybsLog            # hybs system log
+    - ResponseJSON       # response json content-type
+  services:
+    - method: GET
+      description: 疎通テストAPI
+      service_id: SystemTest
+
+- location: /docs/
+  description: セントラルサーバーAPIドキュメント
+  const_params:
+    - name: doc_path
+      value: /v1/
+  services:
+    - method: GET
+      description: セントラルサーバーAPIドキュメント
+      service_id: Document
+
+- location: /v1/system/
+  description: 疎通テストとシステム情報取得
+  services:
+    - method: GET
+      description: 疎通テストとシステム情報取得
+      service_id: SystemTest
+      response:
+        - statusCode: 200
+          fields:
+            - name: serverId
+              description: 当リクエストの処理を担当するサーバーのID。
+              example: sample-game-dev01
+            - name: serverTime
+              description: サーバ側アプリケーション層タイムスタンプ。（システム層時間情報はヘッダーのDateフィールドで返す）。
+              example: 1600000000
+            - name: debugMode
+              description: デバッグモードかどうか。基本的には開発環境の場合trueを返す。
+              example: true
+            - name: debugLog
+              description: DebugModeがtrueの場合のみ出現。APIの実行の間に発生した詳細ログ。
+              example: sample-game-dev01

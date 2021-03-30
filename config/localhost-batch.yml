@@ -1,0 +1,71 @@
+# yaml
+
+app_name: sample-batch
+version: 0.0.0
+env: local
+app_config: config/application.yml
+debug_mode: true
+display_logo: true
+
+redis:
+  - id: Redis
+    network: tcp
+    address: localhost:6389
+    db: 0
+    dial_timeout: 2s
+    read_timeout: 2s
+    write_timeout: 2s
+    min_idle_conns: 2
+    pool_size: 50 # default CPU number*10
+
+mongodb:
+  - id: MongoSampleGame
+    hosts:
+      - localhost:27117
+    database: hybs_sample_game
+    auth_source: admin
+    username: root
+    password: hayabusa-cloud
+    min_pool_size: 2
+    max_pool_size: 50
+    max_conn_idle_time: 15m
+    connect_timeout: 2s
+    server_selection_timeout: 2s
+    socket_timeout: 2s
+    compression_level: 0
+
+mysql:
+  - id: MySQLSampleGame
+    addr: localhost:3316
+    database: hybs_sample_game
+    username: user
+    password: hayabusa-cloud
+    charset: utf8
+    parse_time: True
+    loc: Local
+    max_idle_conns: 2
+    max_open_conns: 50
+
+batch:
+  - id: BatchSampleRepeat
+    event: repeat
+    interval: 90s
+    tasks:
+      - SampleGameTask1
+  - id: BatchSampleTimer
+    event: timer
+    on_minute: ^([0-9]?)(2|5|8)$
+    on_hour: ^.*$
+    on_day: ^.*$
+    on_month: ^.*$
+    tasks:
+      - SampleGameTask2
+  - id: BatchSampleOnce
+    event: once
+    run_at: 2021-03-20 20:30:00
+    tasks:
+      - SampleGameTask3
+  - id: BatchSampleImmediately
+    event: immediately
+    tasks:
+      - SampleGameTask4

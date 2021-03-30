@@ -1,0 +1,72 @@
+# yaml
+
+- location: /v1/system/
+  description: 疎通テストとシステム情報取得
+  services:
+    - method: GET
+      description: 疎通テストとシステム情報取得
+      service_id: SystemTest
+      response:
+        - statusCode: 200
+          fields:
+            - name: serverId
+              description: 当リクエストの処理を担当するサーバーのID。
+              example: sample-game-dev01
+            - name: serverTime
+              description: サーバ側アプリケーション層タイムスタンプ。（システム層時間情報はヘッダーのDateフィールドで返す）。
+              example: 1600000000
+            - name: debugMode
+              description: デバッグモードかどうか。基本的には開発環境の場合trueを返す。
+              example: true
+            - name: debugLog
+              description: DebugModeがtrueの場合のみ出現。APIの実行の間に発生した詳細ログ。
+              example: sample-game-dev01
+
+- location: /v1/hayabusa-id/
+  description: はやぶさ通行証ID関連
+  services:
+    - method: POST
+      description: はやぶさIDを新規作成する
+      service_id: PlatformCreateHayabusaIDV1
+    - method: GET
+      description: はやぶさID情報を取得する
+      middlewares:
+        - AuthHayabusaID
+      service_id: PlatformGetHayabusaIDV1
+      response:
+        - status_code: 200
+          fields:
+            - name: hayabusaId
+              description: プラットフォーム通行証ID
+              example: AaBbCcDd1234
+            - name: accessToken
+              description: HayabusaIDのアクセストークン。Bearer認証に使う
+              example: ABCDEFGHabcdefgh1234567812345678ABCDEFGHabcdefgh1234567812345678ABCDEFGHabcdefgh12345678
+
+- location: /v1/onetime-tokens/
+  description: ゲームにアクセスするトークン関連
+  services:
+    - method: POST
+      description: ゲームへアクセスするに使うトークンを取得
+      middlewares:
+        - AuthHayabusaID
+      service_id: PlatformCreateOnetimeTokenV1
+      response:
+        - status_code: 200
+          description: 発行したゲームサーバートークン及びゲームサーバーアドレスを返す
+          fields:
+            - name: endpoint.protocol
+              description: ゲームサーバープロトコル。httpsまたhttp
+              example: https
+            - name: endpoint.address
+              description: ゲームサーバーアドレス情報。host:portの形
+              example: apps.hybscloud.com:443
+            - name: endpoint.basePath
+              descritpion: ゲームサーバーのベースパス(URI)
+              example: /sample-game/v1
+            - name: onetimeToken.token
+              description: ゲームサーバーにアクセスするに使うトークン
+              example: abcdefghabcdefgh1234567812345678
+            - name: onetimeToken.expireUntil
+              description: トークンの有効期限
+              example: 1600000000

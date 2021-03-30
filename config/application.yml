@@ -1,0 +1,39 @@
+# yaml
+root_token: Bearer abcdef1234567890
+
+apps:
+- app_name: sample-game
+  app_description: サンプルゲームアプリケーション
+  date_offset: 4h
+  database_id: MongoSampleGame
+  servers:
+    - id: local
+      description: 開発サーバー
+      root_token: Bearer abcdef1234567890
+      scheme: http
+      address: localhost:8087
+      base_path: /sample-game/v1
+      onetime_token_url: http://localhost:8087/sample-game/platform/onetime-tokens/
+  platforms:
+    - key: iOS
+      app_id: sample-game
+
+realtime_server_resources:
+  - region: tokyo
+    specs: t3.micro
+    network: udp4
+    protocol: kcp
+    host: 127.0.0.1
+    port: 9999
+    mtu: 736
+    snd_wnd: 64
+    rcv_wnd: 64
+    no_delay: 1
+    interval: 10
+    resend: 2
+    nc: 1
+    root_token: Bearer abcdef1234567890
+    token_api_scheme: http
+    token_api_host: localhost
+    token_api_port: 9990
+    token_api_path: /realtime/access-tokens/

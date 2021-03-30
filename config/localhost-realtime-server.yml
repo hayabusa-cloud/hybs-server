@@ -1,0 +1,47 @@
+# yaml
+
+app_name: sample-solution
+version: 0.0.0
+env: local
+app_config: config/application.yml
+debug_mode: false
+display_logo: true
+
+cache:
+  - id: Cache
+
+redis:
+  - id: Redis
+    network: tcp
+    address: localhost:6389
+    db: 0
+    dial_timeout: 2s
+    read_timeout: 2s
+    write_timeout: 2s
+    min_idle_conns: 2
+    pool_size: 50 # default CPU number*10
+
+http_server:
+  - id: sample-realtime-server
+    # for server to server http rpc
+    http_version: 1.1
+    network: tcp
+    address: localhost:9990
+    use_tls: false
+    read_timeout: 5s
+    write_timeout: 1s
+    compress_level: 0
+    controller_filepath: config/service-realtime/rpc/
+
+realtime_server:
+  - id: sample-realtime-server
+    network: udp
+    address: 127.0.0.1:9999
+    write_timeout: 200ms
+    read_timeout: 2s
+    mtu: 736
+    snd_wnd: 64
+    rcv_wnd: 64
+    turbo_level: 3 # 0=slow 1=standard 2=faster(default) 3=fastest
+    heartbeat: 5s
+    controller_filepath: config/service-realtime/

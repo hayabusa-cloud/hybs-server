@@ -1,0 +1,65 @@
+# yaml
+
+app_name: sample-game-server
+version: 0.0.0
+env: local
+app_config: config/application.yml
+debug_mode: true
+display_logo: true
+
+cache:
+  - id: Cache
+
+redis:
+  - id: Redis
+    network: tcp
+    address: localhost:6389
+    db: 0
+    dial_timeout: 2s
+    read_timeout: 2s
+    write_timeout: 2s
+    min_idle_conns: 2
+    pool_size: 50 # default CPU number*10
+
+mongodb:
+  - id: MongoSampleGame
+    hosts:
+      - localhost:27117
+    database: hybs_sample_game
+    auth_source: admin
+    username: root
+    password: hayabusa-cloud
+    min_pool_size: 2
+    max_pool_size: 50
+    max_conn_idle_time: 15m
+    connect_timeout: 2s
+    server_selection_timeout: 2s
+    socket_timeout: 2s
+    compression_level: 0
+
+mysql:
+  - id: MySQLSampleGame
+    addr: localhost:3316
+    database: hybs_sample_game
+    username: user
+    password: hayabusa-cloud
+    charset: utf8
+    parse_time: True
+    loc: Local
+    max_idle_conns: 2
+    max_open_conns: 50
+
+sqlite:
+  - id: SqliteSampleGame
+    filename: ./db/sqlite3_sample.db
+
+http_server:
+  - id: sample-game-local01
+    http_version: 1.1
+    network: tcp
+    address: localhost:8087
+    use_tls: false
+    read_timeout: 5s
+    write_timeout: 1s
+    compress_level: 6
+    controller_filepath: config/service-sample-game/

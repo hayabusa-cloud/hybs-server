@@ -1,0 +1,59 @@
+# yaml
+
+- location: /v1/realtime/endpoints/:app-id/
+  description: リアルタイム通信サーバー情報
+  middlewares:
+    - UseMongoCentral
+    - UseCache
+  services:
+    - method: GET
+      description: アプリケーションサーバー情報（ホスト、ポート、パラメーター等）
+      service_id: CentralGetRealtimeServerV1
+      response:
+        - status_code: 200
+          description: リアルタイム通信サーバーの基本情報を返す
+          fields:
+            - name: endpoint.network
+              description: レイヤ3/4プロトコル。tcp/tcp4/tcp6/udp/udp4/udp6のいずれか
+              example: udp
+            - name: endpoint.host
+              description: サーバーアドレス
+              example: jp1000.realtime.hybscloud.com
+            - name: endpoint.port
+              description: サーバーポート
+              example: 8443
+            - name: endpoint.turboLevel
+              description: 反応スピードレベル(0-3)。基本的には2
+              example: 2
+        - status_code: 404
+          descritpion: app-idが存在していません
+
+- location: /v1/realtime/free-trial/
+  description: 無料試用プレイグラウンド
+  middlewares:
+    - UseMongoCentral
+    - UseCache
+  services:
+    - method: POST
+      description: 3か月無料試用枠のAppIDを発行
+      form_args:
+        - name: region
+          description: サービスリージョン（現時点ではtokyoのみ）
+          allow:
+            - ^tokyo$
+          example: tokyo
+      service_id: CentralPostFreeTrialRealtimeServerV1
+      response:
+        - status_code: 200
+          description: 新しく発行したAppIDの情報を返す
+          fields:
+            - name: realtimeApp.appId
+              description: アプリケーションID
+              example: playgroud:trial:XXXXXXXXXXXXXX
+            - name: realtimeApp.secret
+              descritpion: アプリケーション管理に使う秘密キー
+              example: abcdefghijklmnopqrstuvwxyz123456
+            - name: realtimeApp.validUntil
+              description: 試用期限
+        - status_code: 400
+          description:

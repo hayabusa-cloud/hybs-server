@@ -1,0 +1,121 @@
+# yaml
+
+- location: /sample-game/v1/example/request-parameters/
+  description: サンプルAPI（リクエストパラメータの取得）
+  services:
+    - method: GET
+      description: サンプルAPI（リクエストパラメータの取得）
+      query_args:
+        - name: int_value
+          description: サンプル整数型フィールド
+          allow:
+            # 入力ルールが正規表現で設定できます
+            - ^\d{1,8}$
+          deny:
+            # NG入力ルールも設定できます。例えば、先頭が0なのはNG
+            - ^0
+            # 例えば、１はNGとする場合は：
+            - ^1$
+          example: 100
+        - name: string_value
+          description: サンプル文字列型フィールド
+          allow:
+            # 入力ルールが正規表現で設定できます
+            - ^\w{2,8}$
+          deny:
+            # NG入力ルールも設定できます。
+            - ^badword$
+          example: hello
+      service_id: ExampleRequestParametersV1
+    - method: POST
+      description: サンプルAPI（リクエストパラメータの取得）
+      form_args:
+        - name: post_int_value
+          description: サンプル整数型フィールド
+          allow:
+            # 入力ルールが正規表現で設定できます
+            - ^\d{1,8}$
+          deny:
+            # NG入力ルールも設定できます。例えば、先頭が0なのはNG
+            - ^0
+            # 例えば、１はNGとする場合は：
+            - ^1$
+          example: 100
+        - name: post_string_value
+          description: サンプル文字列型フィールド
+          allow:
+            # 入力ルールが正規表現で設定できます
+            - ^\w{2,8}$
+          deny:
+            # NG入力ルールも設定できます。
+            - ^badword$
+          example: hello
+      service_id: ExampleRequestParametersV1
+
+- location: /sample-game/v1/example/route-parameters/:id/:name
+  description: サンプルAPI（ルートパラメータの取得）
+  path_params:
+    - name: id
+      description: サンプル整数型パラメータ
+      allow:
+        - ^\d{1,8}$
+      deny:
+        - ^0
+      example: 100
+    - name: name
+      description: サンプル文字列型パラメータ
+      allow:
+        - ^\w{1,20}$
+      example: hello
+  services:
+    - method: GET
+      description: サンプルAPI（ルートパラメータの取得）
+      service_id: ExampleRouteParametersV1
+
+- location: /sample-game/v1/example/master-data/
+  description: サンプルAPI（マスタデータの検索）
+  query_args:
+    - name: level
+      description: サンプルフィールド
+      allow:
+        - ^1|2|3|4|5$
+      example: 3
+  services:
+    - method: GET
+      description: サンプルAPI（マスタデータの検索）
+      service_id: ExampleMasterDataV1
+
+- location: /sample-game/v1/example/sqlite/
+  description: サンプルAPI（Sqlite3データ操作）
+  services:
+    - method: GET
+      description: サンプルAPI（Sqlite3データ操作）
+      service_id: ExampleSqliteV1
+
+- location: /sample-game/v1/example/mysql/
+  description: サンプルAPI（MySQLデータ操作）
+  services:
+    - method: GET
+      description: サンプルAPI（MySQLデータ操作）
+      service_id: ExampleMySQLV1
+
+- location: /sample-game/v1/example/mongodb/
+  description: サンプルAPI（MongoDBデータ操作）
+  services:
+    - method: GET
+      description: サンプルAPI（MongoDBデータ操作）
+      service_id: ExampleMongodbV1
+
+- location: /sample-game/v1/example/redis/
+  description: サンプルAPI（Redisデータ操作）
+  services:
+    - method: GET
+      description: サンプルAPI（Redisデータ操作）
+      service_id: ExampleRedisV1
+
+- location: /sample-game/v1/example/cache/
+  description: サンプルAPI（Cacheデータ操作）
+  services:
+    - method: GET
+      description: サンプルAPI（Cacheデータ操作）
+      service_id: ExampleCacheV1

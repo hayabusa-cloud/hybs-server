@@ -1,0 +1,51 @@
+# yaml
+
+- location: /sample-game/platform/
+  hide_document: true
+  const_params:
+    - name: cache_id
+      value: Cache
+    - name: redis_id
+      value: Redis
+    - name: mongo_id
+      value: SampleGame
+  middlewares:
+    - AuthRoot           # superuser authorization
+    - HybsLog            # hybs system log
+    - Authentication     # parse header and basic authentication
+    - ResponseJSON       # response json content-type
+    - UseCache           # use cache named Cache
+    - UseRedis           # use redis named Redis
+    - UseMongoSampleGame # use database named SampleGame
+  allow:                 # only allows requests from private network
+    - 127.0.0.1/32
+    - 192.168.0.0/16
+    - 172.16.0.0/12
+
+- location: /sample-game/platform/onetime-tokens/
+  hide_document: true
+  post_args:
+    - name: app_name
+      description: アプリケーション名
+      allow:
+        - ^[\w-_]{1,40}$
+      example: sample-game
+    - name: server
+      description: ログインするサーバー名
+      allow:
+        - ^[\w-_]{1,40}$
+      example: local
+    - name: permission
+      description: 請求する権限レベル（0：未認証　1：普通　2：スタッフ）
+      allow:
+        - ^0|1|2|3$
+      example: 1
+  services:
+    - method: POST
+      description: ゲームへのアクセスに使うトークンを設定する
+      service_id: SampleGameCreateOnetimeTokenV1
+      response:
+        - status_code: 200
+          fields:
+          - name: onetimeToken
+            description: 使い捨てトークン情報（トークンと有効期限）
