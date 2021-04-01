@@ -15,7 +15,9 @@ func v1PlayerGet(ctx hybs.Ctx) {
 		return
 	}
 	var player = ctx.CtxValue("Player").(*samplegame.Player)
-	// refresh stamina point
+	// refresh stamina point, check login bonus etc.
+	// ...
+	// ...
 	ctx.SetResponseValue("player", player.ToMsg())
 }
 func v1PlayerModify(ctx hybs.Ctx) {

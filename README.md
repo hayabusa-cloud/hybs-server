@@ -58,12 +58,13 @@ go run main.go -f config/{service-configfile}
 ```
 
 ### 疎通テストしてみよう
-|サーバー|URL
-|----|----
-|プラットフォーム|http://localhost:8086/v1/system/
-|ゲーム01|http://localhost:8087/sample-game/
-|ゲーム02|http://localhost:8089/sample-game/
-|セントラル|http://localhost:8085/v1
+|サーバー|URL|APIドキュメント
+|----|----|----
+|プラットフォーム|http://localhost:8086/v1/system/|http://localhost:8086/docs/
+|ゲーム01|http://localhost:8087/sample-game/|http://localhost:8087/sample-game/docs/
+|ゲーム02|http://localhost:8089/sample-game/|http://localhost:8089/sample-game/docs/
+|セントラル|http://localhost:8085/v1/|http://localhost:8085/docs/
+   
 レスポンス例：
 ```json
 {"env":"local","serverId":"platform-local","serverTime":1600000000}
@@ -85,14 +86,141 @@ go run main.go -f config/{service-configfile}
 コントローラー：/config/service-sample-game/example.yml
 
 ### /config
-- 起動コンフィグファイルと
-- コントローラー定義
+- 起動コンフィグファイル
+- コントローラーの定義
 
 ### /csv
 マスタデータの置く場所
 
 ### /log
 出力されたログファイルの場所   
+
+---
+## シンプルなテストWeb APIを実装してみよう
+具体例を挙げてWeb APIの実装する方法を解説します。
+
+- ステップ1：DB設計とデータモデル定義  
+データベースを設計して、そして"/application/**model**/{server-name}/"フォルダに"{table-name}.go"ファイルを新規作成します。  
+新規作成したファイルにデータテーブルの構造体を定義します（インデックスなど定義も含む）。
+例えば、
+```go
+type PlayerExampleData struct {
+	HayabusaID  string `sql:"hayabusa_id" json:"hayabusaId"`
+	IntField    int    `sql:"int_field" json:"intField"`
+	StringField string `sql:"string_field" json:"stringField"`
+}
+```   
+*ApplicationUpメソッドに索引の管理、オートマイグレーションなどを入れるのはおすすめします。*
+
+- ステップ2：コントローラーを定義  
+コントローラーはリクエストパスとリクエストメソッドによって、サーバーはどのような挙動をするのか、を定義するコンフィグファイルです。例を挙げて説明します。  
+```yaml
+  # まず、リクエストパスを指定します
+- location: /sample-game/v1/
+  # リクエストパスにルートパラメータが入れられます、例えば：
+  # - location: /sample-game/v1/:user-id
+  # "description"はAPIドキュメントの生成に使います
+  description: サンプルゲーム仮想サーバーV1：ルートパス
+  # 接続できるIPアドレスを制限できる
+  # "allow"がオミットされた場合はIPアドレスを制限しません
+  allow:
+    - 0.0.0.0/0
+  # IPアドレスのブラックリストも設定できます。オミットの場合は無制限です
+  deny:
+    - 100.100.100.100/32 # 記入例
+    - 99.99.99.0/24      # 記入例
+  # リクエストのパラメータに入力ルールが設定できます
+  # リクエストのパラメータはパスパラメータ、クエリパラメータ、ポストパラメータ、定数パラメータ4種類に分けられています。
+  # パスパラメータの入力ルール
+  # パスパラメータはURLに埋め込まれる特定のリソースを識別するためのパラメータです
+  # 例えば：/sample-game/v1/foo/:id　というパスでしたら、idがパスパラメータになります
+  # [METHOD] /sample-game/v1/foo/100 をリクエストするときに、"foo"が100となります。
+  path_params: # （記入例）
+    - name: id # パラメータ名
+      description: サンプルフィールドです
+      # 入力ルールを決めます
+      allow: // ホワイトリスト。オミットの場合は無制限
+        - ^[a-zA-Z0-9]{4,10}$ # 正規表現でルールを書く
+      deny: // ブラックリスト。オミットの場合は無制限
+        - ^root$ # 記入例
+        - ^sys$  # 記入例
+      example: hayabusa00  # 例
+  # クエリパラメータはURLの最後に「？」が付いたパラメータです。検索やフィルタなどに関する条件がクエリパラメータとして扱われます。
+  # 例えば、リクエストが/sample-game/v1/foo/?name=hayabusa
+  query_args:    # （記入例）
+    - name: name # パラメータ名
+      description: サンプルフィールドです
+      example: hayabusa
+  # フォームパラメーターはリクエストボディです。通常に更新や追加する時に入れます。
+  # 例えば：
+  # [POST] /sample-game/v1/foo/100
+  # m=1000&n=2000&gender=male
+  form_args:     # （記入例）
+    - name: name # パラメータ名
+      description: サンプルフィールドです
+      example: hayabusa
+  # 定数パラメータはコントローラーで指定する定数です
+  # 例えば、"server=hayabusa"と指定すれば、ソースコード上"server"というキーで"hayabusa"という値が取得できます
+  const_params:
+    - name: server
+      value: hayabusa
+  # "middlewares"はそのリクエストパスをプレフィックスとする全てのAPIが実行する共通ロジックを定義します
+  middlewares:
+    - HybsLog             # ログ出力（内装ミドルウェア）
+    - Authentication      # ベーシックユーザー認証（内装ミドルウェア）
+    - ResponseJSON        # JSON形式のレスポンスを生成（内装ミドルウェア）
+    - UseCache            # 名前が"Cache"のプラグインを使用
+    - UseRedis            # 名前が"Redis"のプラグインを使用
+    - UseMongoSampleGame  # 名前が"MongoSampleGame"のプラグインを使用
+    - UseMySQLSampleGame  # 名前が"MySQLSampleGame"のプラグインを使用
+    - UseSqliteSampleGame # 名前が"SqliteSampleGame"のプラグインを使用
+    - AuthOnetimeToken    # ワンタイムトークンによるアクセス権限の承認
+    - CheckPlayerStatus   # アカウントが凍結中かどうかをチェック
+  slow_query_warn: 80ms   # API実行時間が80msを超えると、Warnレベルのスロークエリログが記録されます
+  slow_query_error: 200ms # API実行時間が200msを超えると、Errorレベルのスロークエリログが記録されます
+```  
+では、/sample-game/v1の下に、APIを定義しましょう
+```yaml
+- location: /sample-game/v1/foo/
+  # "location"は"/sample-game/v1/"プレフィックスを含む為、"/sample-game/v1/"のミドルウェアやルールなどは適用されます
+  description: テストロケーション
+  # 実行するAPIを定義する
+  services: 
+    - method: GET  # メソッド
+      description: テストAPI
+      # ここでもパラメーターにルールが設定できます
+      query_args:
+        - name: x
+          description: テストパラメーター
+          allow:
+            - ^1|2|3|4|5$
+          # 最も重要な項目です。GETメソッドで/sample-game/v1/foo/にアクセスしたら、どのAPI処理関数を呼び出すのを指定します。
+      service_id: SampleGameTestAPI # 登録した名前が"SampleGameTestAPI"の処理関数を呼び出す
+      response: # ドキュメント生成の為の項目です
+        - status_code: 200 # 成功した場合
+          description: 成功
+          fields: # 返すフィールド
+            - name: x
+              description: 説明文
+            - name: y
+              description: 説明文
+        - status_code: 400 
+          description: 失敗
+```
+"Use〇〇〇"のようなミドルウェア名は"Use"+プラグイン名の組み合わせです。例えば、起動コンフィグファイルで名前が"Redis001"のプラグインを定義して、「UseRedis001」というミドルウェア名をコントローラーの"middlewares"の下で書けば、そのプラグインがそのパスの下のAPIに使えるになります。  
+
+- ステップ3：ビジネスロジックを実装  
+では、APIを処理する関数を実装しましょう。下記のようにGo言語のソースコードを新規作成します。  
+/application/service/{server-name}/{module-name}.go  
+実装例は/application/service/sample-game/example.goを参考してください。  
+関数の実装が終わったら、"init"関数に"hybs.RegisterService({server-id}, メソッド名)"を書いてAPI処理メソッドを登録し忘れないで下さい。
+
+- ステップ4：単体テスト
+Go言語の内装テストツールやPostman、JMeterなど外部ツールでテストしましょう。
+
+- 色々実装例：
+コントローラー定義：/config/service-sample-game/example.yml  
+実装：/application/service/samplegame/example.go  
 
 ---
 ## JMeterのシナリオ

@@ -1,0 +1,10 @@
+# docker db filesは要らない
+docker/mongo
+docker/mysql
+docker/redis
+
+# log filesは要らない
+log/
+
+# db filesは要らない
+db/

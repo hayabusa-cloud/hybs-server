@@ -1,10 +1,11 @@
 package samplegame
 
 import (
+	"time"
+
 	hybs "github.com/hayabusa-cloud/hayabusa"
 	"github.com/hayabusa-cloud/hybs-server/application/model/samplegame/master"
 	"go.mongodb.org/mongo-driver/bson"
-	"time"
 )
 
 // a simple example API for receiving request parameters
