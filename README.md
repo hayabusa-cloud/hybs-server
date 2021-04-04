@@ -75,6 +75,8 @@ go run main.go -f config/{service-configfile}
 最も重要な部分でアプリケーションを実装するところです。
 #### /application/batch
 バッチタスクを実装する所
+#### /application/controller
+コントローラーを定義する所
 #### /application/middleware
 ミドルウェア（共通ロジック）を実装する所
 #### /application/model
@@ -87,7 +89,6 @@ go run main.go -f config/{service-configfile}
 
 ### /config
 - 起動コンフィグファイル
-- コントローラーの定義
 
 ### /csv
 マスタデータの置く場所
