@@ -62,4 +62,4 @@ http_server:
     read_timeout: 5s
     write_timeout: 1s
     compress_level: 6
-    controller_filepath: config/service-sample-game/
+    controller_filepath: application/controller/samplegame/

@@ -4,7 +4,7 @@ docker/mysql
 docker/redis
 
 # log filesは要らない
-log/
+log/*
 
 # db filesは要らない
-db/
+db/*
