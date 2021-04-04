@@ -121,7 +121,7 @@ http_server:
     read_timeout: 5s
     write_timeout: 1s
     compress_level: 1
-    controller_filepath: config/service-central/
+    controller_filepath: application/controller/central/
 
   - id: platform-local
     http_version: 1.1
@@ -131,7 +131,7 @@ http_server:
     read_timeout: 5s
     write_timeout: 1s
     compress_level: 1
-    controller_filepath: config/service-platform/
+    controller_filepath: application/controller/platform/
 
   - id: sample-game-local01
     http_version: 1.1
@@ -141,7 +141,7 @@ http_server:
     read_timeout: 5s
     write_timeout: 1s
     compress_level: 6
-    controller_filepath: config/service-sample-game/
+    controller_filepath: application/controller/samplegame/
 
   - id: sample-game-local02
     http_version: 1.1
@@ -151,7 +151,7 @@ http_server:
     read_timeout: 5s
     write_timeout: 1s
     compress_level: 6
-    controller_filepath: config/service-sample-game/
+    controller_filepath: application/controller/samplegame/
 
   - id: sample-realtime-server
     # for server to server http rpc
@@ -160,7 +160,7 @@ http_server:
     address: localhost:9990
     use_tls: false
     compress_level: 0
-    controller_filepath: config/service-realtime/rpc/
+    controller_filepath: application/controller/realtime/rpc/
 
 lb_client:
   - id: sample-client01
@@ -199,4 +199,4 @@ realtime_server:
     rcv_wnd: 64
     turbo_level: 3
     heartbeat: 5s
-    controller_filepath: config/service-realtime/
+    controller_filepath: application/controller/realtime/

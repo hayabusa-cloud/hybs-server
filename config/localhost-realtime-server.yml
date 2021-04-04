@@ -31,7 +31,7 @@ http_server:
     read_timeout: 5s
     write_timeout: 1s
     compress_level: 0
-    controller_filepath: config/service-realtime/rpc/
+    controller_filepath: application/controller/realtime/rpc/
 
 realtime_server:
   - id: sample-realtime-server
@@ -44,4 +44,4 @@ realtime_server:
     rcv_wnd: 64
     turbo_level: 3 # 0=slow 1=standard 2=faster(default) 3=fastest
     heartbeat: 5s
-    controller_filepath: config/service-realtime/
+    controller_filepath: application/controller/realtime/
