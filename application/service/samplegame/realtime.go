@@ -3,10 +3,11 @@ package samplegame
 import (
 	"encoding/base64"
 	"fmt"
+	"time"
+
 	hybs "github.com/hayabusa-cloud/hayabusa"
 	"github.com/hayabusa-cloud/hybs-server/application/middleware/realtime"
 	"github.com/labstack/gommon/random"
-	"time"
 )
 
 const (
@@ -14,7 +15,7 @@ const (
 )
 
 // a sample API: calculate the sum of a + b
-func v1SampleGameRTTest(ctx hybs.RTCtx) {
+func v1SampleGameRTTest(ctx hybs.RealtimeCtx) {
 	var a, b int16
 	ctx.ReadInt16(&a).ReadInt16(&b)
 	var out = ctx.OutPacket()
@@ -29,13 +30,13 @@ func v1SampleGameRTTest(ctx hybs.RTCtx) {
 }
 
 // a sample middleware
-func rtMiddlewareSampleGameQPS(h hybs.RTHandler) hybs.RTHandler {
+func rtMiddlewareSampleGameQPS(h hybs.RealtimeHandler) hybs.RealtimeHandler {
 	// here is concurrency safe
 	var (
 		requestCounter   = 0
 		requestCountedAt = hybs.TimeNil()
 	)
-	return func(ctx hybs.RTCtx) {
+	return func(ctx hybs.RealtimeCtx) {
 		// here is concurrency safe
 		h(ctx)
 		// statistics query per second
@@ -81,8 +82,8 @@ func v1RealtimeAccessTokenPost(ctx hybs.Ctx) {
 }
 
 func init() {
-	hybs.RegisterRTHandler("RTSampleGameTestV1", v1SampleGameRTTest)
-	hybs.RegisterRTMiddleware("RTSampleGameQPS", rtMiddlewareSampleGameQPS)
+	hybs.RegisterRealtimeHandler("RTSampleGameTestV1", v1SampleGameRTTest)
+	hybs.RegisterRealtimeMiddleware("RTSampleGameQPS", rtMiddlewareSampleGameQPS)
 
 	hybs.RegisterService("RealtimeCreateAccessTokenV1", v1RealtimeAccessTokenPost)
 }

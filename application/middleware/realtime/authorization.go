@@ -3,6 +3,7 @@ package realtime
 import (
 	"bytes"
 	"fmt"
+
 	hybs "github.com/hayabusa-cloud/hayabusa"
 )
 
@@ -15,12 +16,12 @@ type AccessToken struct {
 	ValidUntil hybs.Time
 }
 
-func authorization(h hybs.RTHandler) hybs.RTHandler {
-	return func(ctx hybs.RTCtx) {
+func authorization(h hybs.RealtimeHandler) hybs.RealtimeHandler {
+	return func(ctx hybs.RealtimeCtx) {
 		var cacheKey = fmt.Sprintf("/Realtime/Tokens/%s", ctx.Token())
 		var val, ok = ctx.Cache().Get(cacheKey)
 		if !ok {
-			ctx.ErrorClientRequest(hybs.RTErrorCodeUnauthorized, "unauthorized")
+			ctx.ErrorClientRequest(hybs.RealtimeErrorCodeUnauthorized, "unauthorized")
 			return
 		}
 		var token *AccessToken = nil
@@ -29,11 +30,11 @@ func authorization(h hybs.RTHandler) hybs.RTHandler {
 			return
 		}
 		if !bytes.Equal(token.Token, ctx.Token()) {
-			ctx.ErrorClientRequest(hybs.RTErrorCodeForbidden, "bad token")
+			ctx.ErrorClientRequest(hybs.RealtimeErrorCodeForbidden, "bad token")
 			return
 		}
 		if ctx.Now().After(token.ValidUntil) {
-			ctx.ErrorClientRequest(hybs.RTErrorCodeForbidden, "token expired")
+			ctx.ErrorClientRequest(hybs.RealtimeErrorCodeForbidden, "token expired")
 			return
 		}
 		ctx.SetAuthorization(token)
@@ -42,5 +43,5 @@ func authorization(h hybs.RTHandler) hybs.RTHandler {
 }
 
 func init() {
-	hybs.RegisterRTMiddleware("RTAuthorization", authorization)
+	hybs.RegisterRealtimeMiddleware("RTAuthorization", authorization)
 }
