@@ -191,6 +191,7 @@ http_gate:
 realtime_server:
   - id: sample-realtime-server
     network: udp
+    protocol: kcp
     address: 127.0.0.1:9999
     write_timeout: 200ms
     read_timeout: 2s
