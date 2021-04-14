@@ -156,8 +156,8 @@ func realtimeDebugToken(eng hybs.Engine) {
 }
 
 func init() {
-	hybs.RegisterRTHandler("EchoTest", func(ctx hybs.RTCtx) {
-		ctx.SetHeader(hybs.RTHeader0SCOriginal)
+	hybs.RegisterRealtimeHandler("EchoTest", func(ctx hybs.RealtimeCtx) {
+		ctx.SetHeader(hybs.RealtimeHeader0SCOriginal)
 		ctx.SetEventCode(0x80f0)
 		ctx.Response()
 	})
