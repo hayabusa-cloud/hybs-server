@@ -234,7 +234,7 @@ Go言語の内装テストツールやPostman、JMeterなど外部ツールで�
 サーバーは受けたメッセージを変えずにそのままクライアントに返送します。  
 /test/realtime-echo/に入ります  
 ```bash
-cd /test/realtime-echo/
+cd ./test/realtime-echo/
 ```
 そして、テストプログラムを実行します。  
 ```bash
