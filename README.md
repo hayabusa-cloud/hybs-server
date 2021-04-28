@@ -225,7 +225,28 @@ Go言語の内装テストツールやPostman、JMeterなど外部ツールで�
 
 ---
 ## JMeterのシナリオ
-/hybs-server/test/テスト計画.jmxを使ってJMeterで性能テストしましょう。
+/hybs-server/test/テスト計画.jmxを使ってJMeterでHTTPサーバーの性能テストをやりましょう。
+
+---
+## リアルタイム通信機能をテストしましょう
+### echoテスト  
+まず、echoテストをしましょう。クライアント1000個から秒間20回頻度でサーバーにサイズが64バイトのメッセージを送ります。  
+サーバーは受けたメッセージを変えずにそのままクライアントに返送します。  
+/test/realtime-echo/に入ります  
+```bash
+cd /test/realtime-echo/
+```
+そして、テストプログラムを実行します。  
+```bash
+go run main.go
+```
+テストプログラムはコンソールにQPS数を出力します。   
+楽に20k qpsに達成しましたか。
+4コア以上のPCでテストするのをおすすめ  
+Windows PCをお持ちの方、WSL2環境で実行するのをおすすめ
+
+### ルームブロードキャストテスト  
+(作成中)
 
 ---
 ## ライセンス
@@ -233,5 +254,5 @@ MITライセンスのもとで配布されています
 https://github.com/hayabusa-cloud/hybs-server/LICENSE   
 © 2021 hayabusa-cloud   
 
-## 問い合わせ
+## お問い合わせ
 Eメール：hayabusa-cloud@outlook.jp   
