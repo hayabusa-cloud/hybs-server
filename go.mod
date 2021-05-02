@@ -21,6 +21,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.7 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/valyala/fasthttp v1.23.0
+	github.com/xtaci/kcp-go v5.4.20+incompatible
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	go.mongodb.org/mongo-driver v1.5.1
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2 // indirect
