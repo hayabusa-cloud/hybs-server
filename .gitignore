@@ -8,3 +8,6 @@ log/*
 
 # db filesは要らない
 db/*
+
+# .ideaはgitにプッシュしない
+.idea
