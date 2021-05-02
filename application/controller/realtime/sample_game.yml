@@ -21,7 +21,15 @@
 # use middleware
 - event: request
   code: 1000
-  bit: 12 # match first 14 bit(s), similar as CIDR
+  bit: 4 # match first 4 bit(s), as similar as CIDR
+  # it means the range of 1000~1fff
+  description: テストユーザー認証
+  handler: RTSampleGameTestAuthorization
+
+# use middleware
+- event: request
+  code: 1000
+  bit: 12 # match first 12 bit(s), as similar as CIDR
   # it means the range of 1000~100f
   description: QPS統計
   middlewares:
