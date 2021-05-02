@@ -3,6 +3,7 @@ package samplegame
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/hayabusa-cloud/hybs-server/application/common"
 	"time"
 
 	hybs "github.com/hayabusa-cloud/hayabusa"
@@ -27,6 +28,18 @@ func v1SampleGameRTTest(ctx hybs.RealtimeCtx) {
 	// ctx.BroadcastServer(out)   // broadcast to all online users
 	// can also get hayabusa id like this:
 	// ctx.UserID()
+}
+
+// a test middleware: give user permission
+func rtMiddlewareTestAuthorization(h hybs.RealtimeHandler) hybs.RealtimeHandler {
+	return func(ctx hybs.RealtimeCtx) {
+		// check authorization
+		// check user information from db/cache etc.
+		// ...
+		// end check authorization
+		ctx.GivePermission(common.UserPermissionNormal)
+		h(ctx)
+	}
 }
 
 // a sample middleware
@@ -84,6 +97,7 @@ func v1RealtimeAccessTokenPost(ctx hybs.Ctx) {
 func init() {
 	hybs.RegisterRealtimeHandler("RTSampleGameTestV1", v1SampleGameRTTest)
 	hybs.RegisterRealtimeMiddleware("RTSampleGameQPS", rtMiddlewareSampleGameQPS)
+	hybs.RegisterRealtimeMiddleware("RTSampleGameTestAuthorization", rtMiddlewareTestAuthorization)
 
 	hybs.RegisterService("RealtimeCreateAccessTokenV1", v1RealtimeAccessTokenPost)
 }
