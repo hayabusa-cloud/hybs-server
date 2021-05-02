@@ -18,7 +18,7 @@ const (
 	// room players num
 	roomSize = 10
 	// io internal
-	ioInterval = time.Second / 10
+	ioInterval = time.Second / 20
 
 	serverAddr string = "127.0.0.1" // write your own server address here
 	serverPort int    = 9999        // write your own server listening port here
