@@ -230,6 +230,11 @@ Go言語の内装テストツールやPostman、JMeterなど外部ツールで�
 ---
 ## リアルタイム通信機能をテストしましょう   
 ### サーバーを起動   
+- チェック：ファイルディスクリプタ上限数をチェックします
+```bash
+ulimit -n
+```
+足らない場合は多めに設定します。  
 - 起動中のComposeサーバー（統合サーバー）を停止します
 ```bash
 kill {pid}
@@ -242,18 +247,21 @@ go run main.go -f config/localhost-all-compose.yml
 ### エコーテスト  
 まず、エコーテストをしましょう。クライアント1000個から秒間20回頻度でサーバーにサイズが64バイトのメッセージを送ります。  
 サーバーは受けたメッセージを変えずにそのままクライアントに返送します。  
-./test/realtime-echo/に移動します。  
-```bash
-cd ./test/realtime-echo/
+./test/realtime-echo/に移動します。 'main.go'を編集しパラメータを設定します。
+```go
+// client num
+clientNum = 1050
+// io internal
+ioInterval = time.Second / 30
 ```
 そして、テストプログラムを実行します。  
 ```bash
 go run main.go
 ```
-テストプログラムはコンソールにQPS数を出力します。   
-楽に20k qpsに達成しましたか。
-4コア以上のPCでテストするのをおすすめです。  
-Windows PCをお持ちの方、WSL2環境で実行するのをおすすめです。
+テストプログラムはコンソールにQPS数を出力します。楽に30k qpsに達成しました。   
+（サーバ：AWS t3.micro 2vCPU 1GBメモリ CentOS 8.3, クライアント：AWS t3.nano 2vCPU 0.5GBメモリで検証した結果。swap仮想メモリ空間：1.5GB）
+ローカルマシンでテストする場合は4コア以上のPCの使用をおすすめです。  
+Windows PCをお使いの方、WSL2環境で実行するのをおすすめです。
 
 ### ルームブロードキャストテスト  
 ./test/realtime-roombroadcast/に移動します。
@@ -265,14 +273,27 @@ go run ./
 ```go
 const (
   // ルーム数
-  roomNum = 10
+  roomNum = 21
   // 1ルーム内ユーザー数
   roomSize = 10
   // 通信頻度
-  ioInterval = time.Second / 10
+  ioInterval = time.Second / 15
 )
 ```
-秒間20k回の受信に達成しましたか。
+ケース１：10人/ルール＊20ルーム＊秒間15回同期。合わせて秒間30k(20×10×10×15)回の受信に楽に達成しました。  
+（サーバ：AWS t3.micro 2vCPU 1GBメモリ CentOS 8.3, クライアント：AWS t3.nano 2vCPU 0.5GBメモリ）
+```go
+const (
+  // ルーム数
+  roomNum = 1
+  // 1ルーム内ユーザー数
+  roomSize = 105
+  // 通信頻度
+  ioInterval = time.Second / 15
+)
+```
+ケース２：100人/ルール＊1ルーム＊秒間15回同期。合わせて秒間150k(100×100×15)回の受信に楽に達成しました。  
+（サーバ：AWS t3.micro 2vCPU 1GBメモリ CentOS 8.3, クライアント：AWS t3.nano 2vCPU 0.5GBメモリ）
 
 ### パフォーマンスにつきまして
 本プロジェクトはDEMO版として、秒間数万（4コアCPU）回のデータ受送信が耐えられています。   
