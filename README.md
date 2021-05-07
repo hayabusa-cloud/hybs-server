@@ -241,7 +241,7 @@ kill {pid}
 ```
 - リアルタイム通信専用サーバーを起動します
 ```bash
-go run main.go -f config/localhost-all-compose.yml
+go run main.go -f config/localhost-realtime-server.yml
 ```
 
 ### エコーテスト  
