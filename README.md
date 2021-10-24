@@ -308,4 +308,4 @@ https://github.com/hayabusa-cloud/hybs-server/LICENSE
 © 2021 hayabusa-cloud   
 
 ## お問い合わせ
-Eメール：hayabusa-cloud@outlook.jp   
+Eメール：git@hybscloud.com
